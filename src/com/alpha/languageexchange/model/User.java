@@ -1,6 +1,7 @@
 package com.alpha.languageexchange.model;
 
 public class User {
+	private String userImage;
 	private String userEmail;
 	private String userName;
 	private String userPassword;
@@ -12,24 +13,38 @@ public class User {
 	private String userIntro;
 	private String userCreateDate;
 	private String userUpdateDate;
-	
+
 	public User() {
-		this(null, null, null, null, 0, null, null, null, null, null, null);
+		this(null, null, null, null, null, 0, null, null, null, null, null, null);
+	}
+	
+	// login
+	public User(String userEmail, String userPassword, String oAuth) {
+		this(null, userEmail, null, userPassword, null, 0, oAuth, null, null, null, null, null);
 	}
 
-	//timeline user list
+	// timeline user list
 	public User(String userEmail, String userName, String userGender, int userAge, String userNative,
 			String userPracticing, String userIntro, String userUpdateDate) {
-		this(userEmail, userName, null, userGender, userAge, null, userNative, userPracticing, userIntro, null, userUpdateDate);
+		this(null, userEmail, userName, null, userGender, userAge, null, userNative, userPracticing, userIntro, null,
+				userUpdateDate);
 	}
 
 	public User(String userEmail, String userName, String userPassword, String userGender, int userAge, String oAuth) {
-		this(userEmail, userName, userPassword, userGender, userAge, oAuth, null, null, null, null, null);
+		this(null, userEmail, userName, userPassword, userGender, userAge, oAuth, null, null, null, null, null);
 	}
 
-	public User(String userEmail, String userName, String userPassword, String userGender, int userAge, String oAuth,
-			String userNative, String userPracticing, String userIntro, String userCreateDate, String userUpdateDate) {
+	public User(String userEmail, String userName, String userPassword, String userGender,
+			int userAge, String oAuth, String userNative, String userPracticing, String userIntro,
+			String userCreateDate, String userUpdateDate) {
+		this(null, userEmail, userName, userPassword, userGender, userAge, oAuth, userNative, userPracticing, userIntro, userCreateDate, userUpdateDate);
+	}
+	
+	public User(String userImage, String userEmail, String userName, String userPassword, String userGender,
+			int userAge, String oAuth, String userNative, String userPracticing, String userIntro,
+			String userCreateDate, String userUpdateDate) {
 		super();
+		this.userImage = userImage;
 		this.userEmail = userEmail;
 		this.userName = userName;
 		this.userPassword = userPassword;
@@ -41,6 +56,10 @@ public class User {
 		this.userIntro = userIntro;
 		this.userCreateDate = userCreateDate;
 		this.userUpdateDate = userUpdateDate;
+	}
+
+	public String getUserImage() {
+		return userImage;
 	}
 
 	public String getUserEmail() {
@@ -85,6 +104,10 @@ public class User {
 
 	public String getUserUpdateDate() {
 		return userUpdateDate;
+	}
+
+	public void setUserImage(String userImage) {
+		this.userImage = userImage;
 	}
 
 	public void setUserEmail(String userEmail) {
@@ -140,6 +163,7 @@ public class User {
 		result = prime * result + ((userCreateDate == null) ? 0 : userCreateDate.hashCode());
 		result = prime * result + ((userEmail == null) ? 0 : userEmail.hashCode());
 		result = prime * result + ((userGender == null) ? 0 : userGender.hashCode());
+		result = prime * result + ((userImage == null) ? 0 : userImage.hashCode());
 		result = prime * result + ((userIntro == null) ? 0 : userIntro.hashCode());
 		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
 		result = prime * result + ((userNative == null) ? 0 : userNative.hashCode());
@@ -180,6 +204,11 @@ public class User {
 				return false;
 		} else if (!userGender.equals(other.userGender))
 			return false;
+		if (userImage == null) {
+			if (other.userImage != null)
+				return false;
+		} else if (!userImage.equals(other.userImage))
+			return false;
 		if (userIntro == null) {
 			if (other.userIntro != null)
 				return false;
@@ -215,10 +244,9 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [userEmail=" + userEmail + ", userName=" + userName + ", userPassword=" + userPassword
-				+ ", userGender=" + userGender + ", userAge=" + userAge + ", oAuth=" + oAuth + ", userNative="
-				+ userNative + ", userPracticing=" + userPracticing + ", userIntro=" + userIntro + ", userCreateDate="
-				+ userCreateDate + ", userUpdateDate=" + userUpdateDate + "]";
+		return "User [userImage=" + userImage + ", userEmail=" + userEmail + ", userName=" + userName
+				+ ", userPassword=" + userPassword + ", userGender=" + userGender + ", userAge=" + userAge + ", oAuth="
+				+ oAuth + ", userNative=" + userNative + ", userPracticing=" + userPracticing + ", userIntro="
+				+ userIntro + ", userCreateDate=" + userCreateDate + ", userUpdateDate=" + userUpdateDate + "]";
 	}
-
 }
