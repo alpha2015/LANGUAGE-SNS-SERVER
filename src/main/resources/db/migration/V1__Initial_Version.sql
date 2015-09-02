@@ -13,7 +13,8 @@ Grant all privileges on LANGUAGE_EXCHANGE.* to alpha@'localhost' identified by '
 use LANGUAGE_EXCHANGE;
 
 Create Table USERS(
- userEmail varchar(50) PRIMARY KEY,
+ userImage varchar(100),
+ userEmail varchar(50),
  userName varchar(50),
  userPassword varchar(16),
  userGender varchar(16),
@@ -26,4 +27,16 @@ Create Table USERS(
  userUpdateDate DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-insert into USERS (userEmail,userName,userPassword,userGender,userAge,oAuth,userCreateDate,userUpdateDate) values("test@gmail.com","테스터","1234qwer","male","99",null,  default, default);
+Create Table MESSAGE(
+ messageId bigint PRIMARY KEY AUTO_INCREMENT,
+ senderEmail varchar(50),
+ senderOAuth varchar(16),
+ senderName varchar(50),
+ receiverEmail varchar(50),
+ receiverOAuth varchar(16),
+ message varchar(50),
+ sendTime DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+--insert into USERS (userEmail,userName,userPassword,userGender,userAge,oAuth,userCreateDate,userUpdateDate) values("test@gmail.com","테스터","1234qwer","male","99",null,  default, default);
+--insert into USERS (userEmail,userName,userPassword,userGender,userAge,oAuth,userNative,userPracticing,userCreateDate,userUpdateDate) values("test@gmail.com","테스터","1234qwer","male","99",null,"English","Korean",default, default);

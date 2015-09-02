@@ -30,22 +30,31 @@ public class UserController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	protected void create(HttpServletResponse resp, @RequestParam String userEmail, @RequestParam String userName,
-			@RequestParam String userPassword, @RequestParam String userGender, @RequestParam int userAge,
-			@RequestParam String oAuth) throws IOException {
-		if (oAuth.equals(""))
-			oAuth = null;
-		userDao.createUser(new User(userEmail, userName, userPassword, userGender, userAge, oAuth));
+			@RequestParam(required = false) String userPassword, @RequestParam String userGender,
+			@RequestParam int userAge, @RequestParam(required = false) String oAuth) throws IOException {
+		User user = new User(userEmail, userName, userPassword, userGender, userAge, oAuth);
+		if (user.getoAuth() == null){
+//			user.setUserImage("http://10.0.3.2:8080/img/profile/default_profile_image.png");
+			user.setUserImage("http://125.209.198.129/img/profile/default_profile_image.png");
+		}
+		else if (user.getoAuth().equals("facebook")){
+//			user.setUserImage("http://10.0.3.2:8080/img/profile_facebook/default_profile_image.png");
+			user.setUserImage("http://125.209.198.129/img/profile_facebook/default_profile_image.png");
+		}else{
+			user.setUserImage("http://125.209.198.129/img/profile/default_profile_image.png");
+		}
+		userDao.createUser(user);
 		resp.setContentType("application/json;charset=UTF-8");
 		PrintWriter out = resp.getWriter();
-
 		out.print("success");
 	}
 
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	protected void update(HttpSession session, HttpServletResponse resp, @RequestParam String userEmail,
-			@RequestParam String userName, @RequestParam String userPassword, @RequestParam String userGender,
-			@RequestParam int userAge, @RequestParam String userIntro,
-			@RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+			@RequestParam String userName, @RequestParam(required = false) String userPassword,
+			@RequestParam String userGender, @RequestParam int userAge,
+			@RequestParam(required = false) String userIntro, @RequestParam(required = false) String oAuth,
+			@RequestParam(value = "userImage", required = false) MultipartFile userImage) throws IOException {
 		String rootPath = session.getServletContext().getRealPath("/");
 		User user = new User();
 		user.setUserEmail(userEmail);
@@ -54,16 +63,31 @@ public class UserController {
 		user.setUserGender(userGender);
 		user.setUserAge(userAge);
 		user.setUserIntro(userIntro);
+		user.setoAuth(oAuth);
 
-		String path = rootPath + "img/profile/" + userEmail;
-		profileImage.transferTo(new File(path));
-		user.setUserImage(path);
+		String path = null;
+		String returnPath = null;
+		if (user.getoAuth() == null || user.getoAuth().equals("")) {
+			path = rootPath + "img/profile/" + user.getUserEmail() + ".png";
+//			returnPath = "http://10.0.3.2:8080/img/profile/" + user.getUserEmail() + ".png";
+			returnPath = "http://125.209.198.129/img/profile/" + user.getUserEmail() + ".png";
+		}
 
+		if (user.getoAuth() != null && user.getoAuth().equals("facebook")) {
+			path = rootPath + "img/profile_facebook/" + user.getUserEmail() + ".png";
+//			returnPath = "http://10.0.3.2:8080/img/profile_facebook/" + user.getUserEmail() + ".png";
+			returnPath = "http://125.209.198.129/img/profile_facebook/" + user.getUserEmail() + ".png";
+		}
+		userImage.transferTo(new File(path));
+		user.setUserImage(returnPath);
 		userDao.updateUser(user);
+
 		resp.setContentType("application/json;charset=UTF-8");
 		PrintWriter out = resp.getWriter();
 
-		out.print("success");
+		out.print(returnPath);
+		// TODO
+		// return JSONResponseUtil.getJSONResponse(user, HttpStatus.OK);
 	}
 
 	@RequestMapping("/timeline")
@@ -74,14 +98,12 @@ public class UserController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	protected ResponseEntity<Object> login(HttpServletResponse resp, @RequestParam String userEmail,
-			@RequestParam String userPassword, @RequestParam String oAuth) throws IOException {
-		if (oAuth.equals(""))
-			oAuth = null;
+			@RequestParam(required = false) String userPassword, @RequestParam(required = false) String oAuth)
+			throws IOException {
 		User user = userDao.login(new User(userEmail, userPassword, oAuth));
 		// login 실패
 		if (user == null)
 			return JSONResponseUtil.getJSONResponse(user, HttpStatus.UNAUTHORIZED);
-
 		return JSONResponseUtil.getJSONResponse(user, HttpStatus.OK);
 	}
 
@@ -89,5 +111,30 @@ public class UserController {
 	protected ResponseEntity<Object> search(HttpServletResponse resp, @RequestParam String query) throws IOException {
 		List<User> users = userDao.search(query);
 		return JSONResponseUtil.getJSONResponse(users, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/match", method = RequestMethod.POST)
+	protected ResponseEntity<Object> match(HttpServletResponse resp, @RequestParam(required = false) String userEmail,
+			@RequestParam(required = false) String oAuth, @RequestParam String userNative,
+			@RequestParam String userPracticing) throws IOException {
+		User user = new User();
+		user.setUserEmail(userEmail);
+		user.setoAuth(oAuth);
+		user.setUserNative(userNative);
+		user.setUserPracticing(userPracticing);
+		userDao.updateLanguage(user);
+		List<User> users = userDao.match(user);
+		return JSONResponseUtil.getJSONResponse(users, HttpStatus.OK);
+	}
+
+	@RequestMapping("/check")
+	protected void userCheck(HttpServletResponse resp, @RequestParam String userEmail) throws IOException {
+		resp.setContentType("application/json;charset=UTF-8");
+		PrintWriter out = resp.getWriter();
+		if (userDao.findUserByUserEmail(userEmail) == null) {
+			out.print("success");
+		} else {
+			out.print("fail");
+		}
 	}
 }

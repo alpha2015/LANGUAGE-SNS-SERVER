@@ -24,9 +24,9 @@ public class User {
 	}
 
 	// timeline user list
-	public User(String userEmail, String userName, String userGender, int userAge, String userNative,
+	public User(String userImage, String userEmail, String userName, String userGender, int userAge, String oAuth, String userNative,
 			String userPracticing, String userIntro, String userUpdateDate) {
-		this(null, userEmail, userName, null, userGender, userAge, null, userNative, userPracticing, userIntro, null,
+		this(userImage, userEmail, userName, null, userGender, userAge, oAuth, userNative, userPracticing, userIntro, null,
 				userUpdateDate);
 	}
 
